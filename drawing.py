@@ -1,0 +1,66 @@
+import pygame
+from mouse import *
+
+
+class Drawing:
+    def __init__(self, sc, mouse):
+        self.sc = sc
+        self.mouse = mouse
+        pygame.font.init()
+        self.font = pygame.font.SysFont('Arial', 36, bold=True)
+
+
+    def world_map(self):
+        for x, y in world_map:
+            if world_map[(x, y)][0] == 'W':
+                pygame.draw.rect(self.sc, DARK_ORANGE, (x, y, TILE, TILE), 2)
+
+    def cursor_shadow(self):
+        if self.mouse.object_type == '.' and not self.mouse.is_hero_checked:
+            pygame.draw.rect(self.sc, WHITE, (int(self.mouse.map_coord[0]) * TILE,
+                                              int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
+
+    def marked_hero(self):
+        if self.mouse.pers_type == 'H':
+            pygame.draw.rect(self.sc, GREEN, (int(self.mouse.map_coord[0]) * TILE,
+                                              int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
+
+    def marked_hero_move(self):
+        if self.mouse.is_hero_checked and \
+                self.mouse.map_coord in self.mouse.selected_hero_path_check:
+            for i in self.mouse.selected_hero_path_check:
+                pygame.draw.rect(self.sc, GREEN, (i[0] * TILE, i[1] * TILE, TILE, TILE), 2)
+
+            pygame.draw.rect(self.sc, BLUE, (int(self.mouse.map_coord[0]) * TILE,
+                                             int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
+
+
+    def marked_pers_move_range(self):
+        if self.mouse.pers_can_move == 'H':
+            for i in self.mouse.path_check:
+                pygame.draw.rect(self.sc, GREEN, (i[0] * TILE, i[1] * TILE, TILE, TILE), 2)
+        elif self.mouse.pers_can_move == 'E':
+            for i in self.mouse.path_check:
+                pygame.draw.rect(self.sc, RED, (i[0] * TILE, i[1] * TILE, TILE, TILE), 2)
+
+    def marked_enemy(self):
+        if self.mouse.pers_type == 'E':
+            pygame.draw.rect(self.sc, RED, (int(self.mouse.map_coord[0]) * TILE,
+                                            int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
+
+
+    def personage(self, pers):
+        personage = pygame.Surface((100, 100))
+        # personage.name = pers.name
+        # personage.type = pers.type
+        personage.fill(pers.color)
+        # personage.health = pers.health
+        # personage.armor = pers.armor
+        rect = personage.get_rect()
+        # print(rect)
+        return personage
+
+    def fps(self, clock):
+        display_fps = str(int(clock.get_fps()))
+        render = self.font.render(display_fps, False, DARK_ORANGE)
+        self.sc.blit(render, FPS_POS)
