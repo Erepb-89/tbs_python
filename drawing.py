@@ -45,20 +45,24 @@ class Drawing:
 
     def marked_enemy(self):
         if self.mouse.pers_type == 'E':
-            pygame.draw.rect(self.sc, RED, (int(self.mouse.map_coord[0]) * TILE,
+            pygame.draw.rect(self.sc, DARK_RED, (int(self.mouse.map_coord[0]) * TILE,
                                             int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
 
 
     def personage(self, pers):
         personage = pygame.Surface((100, 100))
-        # personage.name = pers.name
-        # personage.type = pers.type
         personage.fill(pers.color)
-        # personage.health = pers.health
-        # personage.armor = pers.armor
         rect = personage.get_rect()
         # print(rect)
         return personage
+
+    def draw_personage_characteristics(self, pers):
+        # self.sc.blit(self.font.render(str(pers.name), False, DARK_ORANGE),
+        #              (pers.pos[0] * TILE, pers.pos[1] * TILE - 80))
+        self.sc.blit(self.font.render(str(pers.health), False, DARK_RED),
+                     (pers.pos[0] * TILE, pers.pos[1] * TILE - 40))
+        self.sc.blit(self.font.render(str(pers.armor), False, DARK_BLUE),
+                     (pers.pos[0] * TILE + 40, pers.pos[1] * TILE - 40))
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))

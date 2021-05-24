@@ -1,7 +1,7 @@
 from settings import *
 from map import world_map
 from positions_map import position_mission_1
-from personages import hero, enemy, enemy2
+from personages import hero, hero2, enemy, enemy2
 import pygame
 
 
@@ -33,25 +33,32 @@ class Mouse:
                 self.map_coord = world_map[key][1]
                 # print(self.map_coord)
 
-                for key, val in position_mission_1.all_personages.items():
-                    if self.map_coord == val[0]:
-                        if 'hero' in key:
+                for key2, val2 in position_mission_1.all_personages.items():
+                    if self.map_coord == val2[0]:
+                        if 'hero' in key2:
+                            print(key2)
                             self.pers_type = 'H'
-                        elif 'enemy' in key:
+                        elif 'enemy' in key2:
+                            print(key2)
                             self.pers_type = 'E'
 
                     else:
                         self.pers_type = ''
 
+                # self.pers_type = position_mission_1.all_personages[key]
+
     @property
     def get_pers_coordinates(self):
         if self.is_hero_checked and self.pers_type == 'H':
-            self.coord = position_mission_1.all_personages['hero'][0]
+            if self.map_coord == position_mission_1.all_personages['hero'][0]:
+                self.coord = position_mission_1.all_personages['hero'][0]
+            elif self.map_coord == position_mission_1.all_personages['hero2'][0]:
+                self.coord = position_mission_1.all_personages['hero2'][0]
         return self.coord
 
     def get_speed(self):
         if self.pers_type == 'H':
-            self.speed = player_speed
+            self.speed = hero_speed
         elif self.pers_type == 'E' and not self.is_hero_checked:
             self.speed = enemy_speed
 
@@ -79,6 +86,7 @@ class Mouse:
                 for val in world_map.values():
                     if '.' in val[0] and val[1] == field and \
                             val[1] != position_mission_1.all_personages['hero'][0] and \
+                            val[1] != position_mission_1.all_personages['hero2'][0] and \
                             val[1] != position_mission_1.all_personages['enemy'][0] and \
                             val[1] != position_mission_1.all_personages['enemy2'][0]:
                         self.can_move_fields.add(val[1])
@@ -109,6 +117,7 @@ class Mouse:
                 for val in world_map.values():
                     if '.' in val and val[1] == field and \
                             val[1] != position_mission_1.all_personages['hero'][0] and \
+                            val[1] != position_mission_1.all_personages['hero2'][0] and \
                             val[1] != position_mission_1.all_personages['enemy'][0] and \
                             val[1] != position_mission_1.all_personages['enemy2'][0]:
                         self.can_move_fields.add(val[1])
@@ -119,11 +128,11 @@ class Mouse:
     def get_object_type(self):
         if self.pers_type == 'H':
             pygame.mouse.set_cursor(*pygame.cursors.tri_right)
-        elif self.pers_type == 'E':
+        if self.pers_type == 'E':
             pygame.mouse.set_cursor(*pygame.cursors.broken_x)
-        elif self.object_type == '.' and self.pers_type != 'H' and self.pers_type != 'E':
+        if self.object_type == '.' and self.pers_type != 'H' and self.pers_type != 'E':
             pygame.mouse.set_cursor(*pygame.cursors.arrow)
-        elif self.object_type == 'W' and self.pers_type != 'H' and self.pers_type != 'E':
+        if self.object_type == 'W' and self.pers_type != 'H' and self.pers_type != 'E':
             pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
     @property
@@ -183,6 +192,16 @@ class Mouse:
         """Ходьба, герой"""
         pressed = pygame.mouse.get_pressed()
         if self.hero_checked:
-            if pressed[0] and self.map_coord in self.can_move_fields:
+            if pressed[0] and \
+                    self.map_coord in self.can_move_fields and \
+                    self.coord == position_mission_1.all_personages['hero'][0]:
                 position_mission_1.all_personages['hero'] = self.map_coord, 'H'
+                hero.pos = self.map_coord
+                self.hero_checked = False
+
+            elif pressed[0] and \
+                    self.map_coord in self.can_move_fields and \
+                    self.coord == position_mission_1.all_personages['hero2'][0]:
+                position_mission_1.all_personages['hero2'] = self.map_coord, 'H'
+                hero2.pos = self.map_coord
                 self.hero_checked = False
