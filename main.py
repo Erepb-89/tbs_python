@@ -27,9 +27,11 @@ class RPGPython:
 
     def _check_events(self):
         """Обрабатывает нажатия клавиш и события мыши."""
+        mouse_released = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+
 
     def _update_screen(self):
         """Обновляет изображения на экране и отображает новый экран."""
@@ -61,6 +63,11 @@ class RPGPython:
         self.drawing.marked_pers_move_range()
         self.drawing.marked_hero_move()
         self.drawing.marked_enemy()
+        self.drawing.marked_hero_attack()
+        # self.drawing.marked_pers_zone_attack()
+
+        self.mouse.zone_attack(hero)
+        self.mouse.zone_attack(hero2)
         self.mouse.hero_move()
 
         # self.drawing.fps(clock)

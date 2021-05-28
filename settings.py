@@ -11,6 +11,10 @@ HERO_POS = (400, 100)
 ENEMY_POS = (400, 300)
 FPS_POS = (WIDTH - 65, 5)
 
+# mouse buttons
+LEFT = 1
+RIGHT = 3
+
 # hero_settings
 hero_speed = 3
 
@@ -21,6 +25,7 @@ enemy_speed = 2
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 DARK_RED = (70, 0, 0)
 DARK_BLUE = (0, 0, 70)
 GREEN = (0, 255, 0)

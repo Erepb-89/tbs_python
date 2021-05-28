@@ -34,11 +34,30 @@ class Drawing:
             pygame.draw.rect(self.sc, BLUE, (int(self.mouse.map_coord[0]) * TILE,
                                              int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
 
+    # def marked_pers_zone_attack(self):
+    #     if self.mouse.is_hero_checked and \
+    #             (self.mouse.map_coord == hero.pos or
+    #              self.mouse.map_coord == hero2.pos):
+    #         for zoa in self.mouse.zoa:
+    #             pygame.draw.rect(self.sc, RED, (zoa[0] * TILE, zoa[1] * TILE, TILE, TILE), 2)
+
+    def marked_hero_attack(self):
+        if self.mouse.is_hero_checked and \
+                (self.mouse.map_coord == enemy.pos or
+                 self.mouse.map_coord == enemy2.pos) and \
+                self.mouse.map_coord in self.mouse.zoa:
+                    pygame.draw.rect(self.sc, BLUE, (int(self.mouse.map_coord[0]) * TILE,
+                                             int(self.mouse.map_coord[1]) * TILE, TILE, TILE), 2)
+
 
     def marked_pers_move_range(self):
         if self.mouse.pers_can_move == 'H':
             for i in self.mouse.path_check:
                 pygame.draw.rect(self.sc, GREEN, (i[0] * TILE, i[1] * TILE, TILE, TILE), 2)
+
+            for zoa in self.mouse.zoa:
+                pygame.draw.rect(self.sc, RED, (zoa[0] * TILE, zoa[1] * TILE, TILE, TILE), 2)
+
         elif self.mouse.pers_can_move == 'E':
             for i in self.mouse.path_check:
                 pygame.draw.rect(self.sc, RED, (i[0] * TILE, i[1] * TILE, TILE, TILE), 2)

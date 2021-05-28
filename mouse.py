@@ -9,14 +9,27 @@ class Mouse:
     def __init__(self):
         self.hero_checked = False
         self.pers_type = ''
+        self.zoa = []
 
     def movement(self):
+        self.check_mouse_events()
         self.mouse_control()
         self.get_mouse_coordinates()
         self.get_object_type()
         self.is_hero_or_enemy()
         self.is_pers_can_move()
         self.get_speed()
+        self.hero_attack(hero)
+        # self.hero_attack(hero2)
+
+    def check_mouse_events(self):
+        self.left_click = False
+        self.right_click = False
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT:
+                self.left_click = True
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT:
+                self.right_click = True
 
     def mouse_control(self):
         if pygame.mouse.get_focused():
@@ -36,10 +49,8 @@ class Mouse:
                 for key2, val2 in position_mission_1.all_personages.items():
                     if self.map_coord == val2[0]:
                         if 'hero' in key2:
-                            print(key2)
                             self.pers_type = 'H'
                         elif 'enemy' in key2:
-                            print(key2)
                             self.pers_type = 'E'
 
                     else:
@@ -50,10 +61,10 @@ class Mouse:
     @property
     def get_pers_coordinates(self):
         if self.is_hero_checked and self.pers_type == 'H':
-            if self.map_coord == position_mission_1.all_personages['hero'][0]:
-                self.coord = position_mission_1.all_personages['hero'][0]
-            elif self.map_coord == position_mission_1.all_personages['hero2'][0]:
-                self.coord = position_mission_1.all_personages['hero2'][0]
+            if self.map_coord == hero.pos:
+                self.coord = hero.pos
+            elif self.map_coord == hero2.pos:
+                self.coord = hero2.pos
         return self.coord
 
     def get_speed(self):
@@ -85,10 +96,10 @@ class Mouse:
             for field in all_fields:
                 for val in world_map.values():
                     if '.' in val[0] and val[1] == field and \
-                            val[1] != position_mission_1.all_personages['hero'][0] and \
-                            val[1] != position_mission_1.all_personages['hero2'][0] and \
-                            val[1] != position_mission_1.all_personages['enemy'][0] and \
-                            val[1] != position_mission_1.all_personages['enemy2'][0]:
+                            val[1] != hero.pos and \
+                            val[1] != hero2.pos and \
+                            val[1] != enemy.pos and \
+                            val[1] != enemy2.pos:
                         self.can_move_fields.add(val[1])
 
             # print(self.can_move_fields)
@@ -116,10 +127,10 @@ class Mouse:
             for field in all_fields:
                 for val in world_map.values():
                     if '.' in val and val[1] == field and \
-                            val[1] != position_mission_1.all_personages['hero'][0] and \
-                            val[1] != position_mission_1.all_personages['hero2'][0] and \
-                            val[1] != position_mission_1.all_personages['enemy'][0] and \
-                            val[1] != position_mission_1.all_personages['enemy2'][0]:
+                            val[1] != hero.pos and \
+                            val[1] != hero2.pos and \
+                            val[1] != enemy.pos and \
+                            val[1] != enemy2.pos:
                         self.can_move_fields.add(val[1])
 
             # print(self.can_move_fields)
@@ -173,7 +184,8 @@ class Mouse:
             # print('Hero can move')
             self.pers_can_move = 'H'
             self.hero_checked = False
-        elif pressed[2] and self.pers_type == 'E':
+        # elif pressed[2] and self.pers_type == 'E':
+        if not self.hero_checked and self.pers_type == 'E':
             # print('Enemy can move')
             self.pers_can_move = 'E'
             self.hero_checked = False
@@ -184,9 +196,21 @@ class Mouse:
         """Проверка при нажатии, герой"""
         pressed = pygame.mouse.get_pressed()
         if pressed[0] and self.pers_type == 'H':
-            print('Hero checked')
             self.hero_checked = True
         return self.hero_checked
+
+    def zone_attack(self, pers):
+        if self.is_hero_checked and self.coord == pers.pos:
+
+            self.zoa = [
+                        (int(self.coord[0]), int(self.coord[1] + pers.zone_of_attack)),
+                        (int(self.coord[0]), int(self.coord[1] - pers.zone_of_attack)),
+                        (int(self.coord[0] + pers.zone_of_attack), int(self.coord[1])),
+                        (int(self.coord[0] - pers.zone_of_attack), int(self.coord[1]))
+                        ]
+
+        return self.zoa
+
 
     def hero_move(self):
         """Ходьба, герой"""
@@ -197,6 +221,7 @@ class Mouse:
                     self.coord == position_mission_1.all_personages['hero'][0]:
                 position_mission_1.all_personages['hero'] = self.map_coord, 'H'
                 hero.pos = self.map_coord
+                print(hero.pos)
                 self.hero_checked = False
 
             elif pressed[0] and \
@@ -204,4 +229,23 @@ class Mouse:
                     self.coord == position_mission_1.all_personages['hero2'][0]:
                 position_mission_1.all_personages['hero2'] = self.map_coord, 'H'
                 hero2.pos = self.map_coord
+                print(hero2.pos)
                 self.hero_checked = False
+
+
+    def hero_attack(self, pers):
+        """Атака, герой"""
+        if self.hero_checked:
+            if self.left_click and self.map_coord == enemy.pos and self.map_coord in self.zoa:
+                print(enemy.pos)
+                pers.attack_for_health(enemy)
+            if self.right_click and self.map_coord == enemy.pos and self.map_coord in self.zoa:
+                print(enemy.pos)
+                pers.attack_for_armor(enemy)
+
+            elif self.left_click and self.map_coord == enemy2.pos and self.map_coord in self.zoa:
+                pers.attack_for_health(enemy2)
+                print(enemy2.pos)
+            elif self.right_click and self.map_coord == enemy2.pos and self.map_coord in self.zoa:
+                pers.attack_for_armor(enemy2)
+                print(enemy2.pos)
